@@ -1,87 +1,139 @@
-# Student Grade Management System
+# MANBHUM VICTORIA INSTITUTION — Student Grade Management System
 
-A beginner-friendly web app built with **Python (Flask)** and **HTML + CSS**.
-Student data is stored in a Python list in memory while the app runs — no
-database and no extra libraries.
+A beginner-friendly Flask web application for recording student marks, calculating totals/percentages/grades, and generating report cards. No database required — data is stored in a Python list while the app runs.
 
-## Features
+---
 
-- Add a student (name, roll number, class) and marks for 5 subjects.
-- Validation: required fields, unique roll number, marks must be 0–100.
-- Automatic report card with total, percentage, grade and Pass/Fail status.
-- All-students table with live search by name or roll number.
-- Class statistics: topper, average, highest/lowest percentage, pass/fail counts.
-
-## File structure
+## 📁 File Organization
 
 ```
-project/
-  app.py                 # Flask backend (all Python logic)
-  requirements.txt       # Flask
-  templates/
-    base.html            # Layout: navbar, flash messages, footer
-    index.html           # Home / Add Student form
-    result.html          # Report card
-    students.html        # All students table + search
-    stats.html           # Class statistics
-  static/
-    style.css            # Responsive styling
+IT MINI PROJECT/
+├── RUN_WEBSITE.bat          <-- DOUBLE-CLICK THIS to start the website
+├── INSTALL_FLASK.bat         <-- Run this first if Flask is not installed
+├── app.py                    <-- Flask backend (all Python logic)
+├── requirements.txt          <-- Python dependencies
+├── README.md                 <-- This file
+├── .gitignore                <-- Git ignore rules
+├── .git/                     <-- Git version control folder
+├── __pycache__/              <-- Python cache (auto-generated)
+├── templates/                <-- HTML page templates
+│   ├── base.html             <-- Base layout (navbar, footer, flash messages)
+│   ├── index.html            <-- Add Student form page
+│   ├── result.html           <-- Individual report card page
+│   ├── students.html         <-- All students table + search + filters
+│   ├── stats.html            <-- Class summary dashboard
+│   └── _radar_chart.html     <-- Radar chart component (included in stats)
+└── static/                   <-- CSS, images, etc.
+    └── style.css             <-- All styling (school colors, report card layout)
 ```
 
-## Design system
+---
 
-The UI follows the **Flat Design** style from the
-[UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) skill:
+## 🚀 How to Run (Double-Click Method)
 
-- Solid education-teal palette (`#0F766E` primary, `#D97706` accent) — no gradients or shadows
-- Plus Jakarta Sans typography
-- Inline SVG icons (no emoji icons), 150–200 ms hover transitions
-- Visible focus states, `prefers-reduced-motion` support, skip link, ARIA labels
-- Responsive at 375 / 768 / 1024 / 1440 px
+### First-time setup only:
+1. **Double-click `INSTALL_FLASK.bat`** — This installs Flask (only needed once).
 
-## How to run
+### Every time you want to use the website:
+1. **Double-click `RUN_WEBSITE.bat`** — This starts the server and opens your browser automatically.
+2. The website opens at: **http://127.0.0.1:5000**
+3. From another device on the same Wi-Fi: **http://10.183.219.135:5000**
 
-1. Install Python 3.10+ from <https://python.org> if needed.
-2. Open a terminal in this folder and install Flask:
+### Manual method (if .bat files don't work):
+```powershell
+cd "C:\Users\Sudarshan\Desktop\IT MINI PROJECT"
+python app.py
+```
+Then open your browser to `http://127.0.0.1:5000`
 
-   ```bash
-   pip install -r requirements.txt
+---
+
+## 📄 Pages & Features
+
+| Page | URL | What it does |
+|------|-----|--------------|
+| **Add Student** | `/` | Form to enter student name, roll number, class, and 5 subject marks |
+| **Report Card** | `/result/<roll>` | Individual marksheet with total, percentage, grade, pass/fail stamp |
+| **All Results** | `/students` | Searchable table of all students with View/PDF buttons |
+| **Class Summary** | `/stats` | Class statistics, subject averages, class-wise comparison |
+
+---
+
+## 🎯 Grading Logic
+
+- **Total** = Sum of 5 subjects (out of 500)
+- **Percentage** = (Total / 500) × 100
+- **Grade**: A+ (≥90), A (80–89), B (70–79), C (60–69), D (50–59), F (<50)
+- **Status**: FAIL if any subject is below 35, otherwise PASS
+
+---
+
+## 🔑 Python Concepts Used (in `app.py`)
+
+| Concept | Where it's used |
+|---------|----------------|
+| **Variables & Data Types** | `SUBJECTS`, `students` list, integers, strings, floats |
+| **Input** | `request.form.get()` from HTML form; `request.args.get()` for search |
+| **Output** | `render_template()` sends data to HTML pages; `flash()` shows messages |
+| **Operators** | `+`, `/`, `*`, `==`, `<`, `>=`, `or`, `and` |
+| **if / elif / else** | `find_grade()` function, validation checks |
+| **Lists** | `students` (all records), `marks` (5 subjects per student), `errors` |
+| **Loops** | `for` loops for totals/stats; `while` loop for roll number validation |
+| **Functions** | `calculate_total()`, `calculate_percentage()`, `find_grade()`, `find_status()`, `validate_marks()`, `get_class_statistics()` |
+
+---
+
+## 🛡️ Validation Rules
+
+- Student name, roll number, and class are required
+- Roll numbers must be unique (duplicate check with while loop)
+- Marks must be whole numbers between 0 and 100
+- Pass mark is 35 in every subject
+
+---
+
+## 📊 Sample Data
+
+The app comes pre-loaded with 8 sample students (Indian names, varied marks, mix of pass/fail) so you can see the system working immediately.
+
+---
+
+## 🖨️ Print / PDF
+
+- Each report card has a **"Print Report Card"** button
+- Clicking it generates a downloadable PDF using only Python's standard library (no extra packages needed)
+
+---
+
+## 📮 School Identity
+
+- **School**: MANBHUM VICTORIA INSTITUTION
+- **Department**: Examination Cell
+- **Academic Year**: 2026–27
+- **Exam**: Half-Yearly Examination
+- **Contact**: examcell@mvi.edu.in
+
+---
+
+## 🐛 Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| "Flask not found" | Double-click `INSTALL_FLASK.bat` first |
+| Port already in use | Close other Python apps, or run `taskkill /F /IM python.exe` then try again |
+| Website shows plain text | Make sure `static/style.css` exists and the server is running properly |
+| Other devices can't connect | Use `http://10.183.219.135:5000` and ensure Windows Firewall allows port 5000 |
+
+---
+
+## 📤 To Push to GitHub (Sudarshan002006)
+
+1. Create repo at https://github.com/New — name: `student-grade-management-system` (no README)
+2. In PowerShell inside this folder:
+   ```powershell
+   git add .
+   git commit -m "Initial commit"
+   git branch -M main
+   git remote add origin https://github.com/Sudarshan002006/student-grade-management-system.git
+   git push -u origin main
    ```
-
-3. Start the server:
-
-   ```bash
-   python app.py
-   ```
-
-4. Open your browser at <http://127.0.0.1:5000>
-
-> Data is kept in memory. Restarting the server clears all students.
-
-## Grading rules
-
-| Item   | Rule                                             |
-| ------ | ------------------------------------------------ |
-| Total  | Sum of 5 subjects (out of 500)                   |
-| Percentage | (total / 500) × 100                          |
-| Grade  | A+ ≥ 90, A 80–89, B 70–79, C 60–69, D 50–59, F < 50 |
-| Status | Fail if any subject is below 35, otherwise Pass   |
-
-## Python concepts used
-
-| Concept              | Where in `app.py`                                                        |
-| -------------------- | ------------------------------------------------------------------------ |
-| Variables / types    | `SUBJECTS`, `MAX_MARKS_PER_SUBJECT`, `students`, student dictionaries    |
-| Input                | `request.form` (add form), `request.args` (search box)                    |
-| Output               | `render_template(...)`, `flash(...)`, `redirect(...)`                     |
-| Operators            | `+`, `/`, `*`, `round()`, `>`, `<`, `>=`, `==`, `or`, `and` (via `elif`)  |
-| if / elif / else     | `find_grade()`, validation in `index()`                                  |
-| Lists                | `students` (all students), `marks` (one student's marks), `errors`        |
-| Loops                | `for` in totals/status/stats, `while` in `roll_number_exists()`          |
-| Functions            | `calculate_total`, `calculate_percentage`, `find_grade`, `find_status`, `validate_marks`, `get_class_statistics`, helpers |
-
-## Ideas to extend
-
-1. **Database storage** — save students in SQLite/CSV so data survives restarts.
-2. **Teacher login** — add sessions and protect the add/delete pages.
-3. **PDF report card** — generate and download a printable PDF per student.
