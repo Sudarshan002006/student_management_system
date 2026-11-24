@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% set stats = get_class_statistics(students) %}
+{% block title %}Class Summary · MANBHUM VICTORIA INSTITUTION{% endblock %}
+{% block content %}
+<section class="page-header">
+  <span class="eyebrow">Examination Cell · Half-Yearly 2026–27</span>
+  <h1>Class Summary</h1>
+  <p class="lead">Overview of every result recorded this term.</p>
+</section>
+
+{% if stats %}
+<div class="stats-grid">
+  <div class="card stat-card">
+    <span class="stat-label">Students Recorded</span>
+    <span class="stat-value">{{ stats.count }}</span>
+  </div>
+  <div class="card stat-card">
+    <span class="stat-label">Overall Pass %</span>
+    <span class="stat-value good">{{ "%.2f"|format(stats.passed / stats.count * 100) }}%</span>
+  </div>
+  <div class="card stat-card">
+    <span class="stat-label">Class Average</span>
+    <span class="stat-value">{{ "%.2f"|format(stats.average) }}%</span>
+  </div>
+  <div class="card stat-card">
+    <span class="stat-label">Highest %</span>
+    <span class="stat-value good">{{ "%.2f"|format(stats.highest.percentage) }}%</span>
+  </div>
+  <div class="card stat-card">
+    <span class="stat-label">Lowest %</span>
+    <span class="stat-value bad">{{ "%.2f"|format(stats.lowest.percentage) }}%</span>
+  </div>
+  <div class="card stat-card">
+    <span class="stat-label">Failed</span>
+    <span class="stat-value bad">{{ stats.failed }}</span>
+  </div>
+</div>
+
+<div class="card topper-card">
+  <div>
+    <h2>Class Topper</h2>
+    <p>{{ stats.topper.name }} &nbsp;·&nbsp; Roll {{ stats.topper.roll }} &nbsp;·&nbsp; Class {{ stats.topper.class }}</p>
+  </div>
+  <div class="topper-score">
+    <span class="stat-value">{{ "%.2f"|format(stats.topper.percentage) }}%</span>
+    <span class="topper-badge">
+      <span>Grade {{ stats.topper.grade }}</span>
+    </span>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="card-title">Subject-Wise Average</h2>
+  <div class="subject-chart">
+    {% for subject in subject_averages %}
+    <div class="subject-bar">
+      <span class="subject-label">{{ subject.name }}</span>
+      <span class="subject-bar-wrap">
+        <span class="subject-bar-fill" style="width: {{ subject.average }}%;"></span>
+      </span>
+      <span class="subject-value">{{ "%.1f"|format(subject.average) }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="card-title">Class-Wise Comparison</h2>
+  <div class="class-comparison">
+    {% for class_info in class_breakdown %}
+    <div class="class-card">
+      <span class="class-name">{{ class_info.name }}</span>
+      <div class="class-metrics">
+        <span><b>Avg:</b> {{ "%.2f"|format(class_info.average) }}%</span>
+        <span><b>Pass:</b> {{ "%.2f"|format(class_info.pass_pct) }}%</span>
+        <span><b>Count:</b> {{ class_info.count }}</span>
+      </div>
+      <div class="class-bar-wrap">
+        <span class="class-bar-fill pass" style="width: {{ class_info.pass_pct }}%;"></span>
+        <span class="class-bar-fill fail" style="width: {{ 100 - class_info.pass_pct }}%;"></span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="form-actions">
+  <a href="{{ url_for('students') }}" class="btn btn-primary">Export Class Result (CSV)</a>
+</div>
+{% else %}
+<div class="card empty-state">
+  <span class="empty-icon">📄</span>
+  <h2>No results yet</h2>
+  <p>Record at least one student to see the class summary.</p>
+  <a href="{{ url_for('index') }}" class="btn btn-primary">Record Marks</a>
+</div>
+{% endif %}
+{% endblock %}

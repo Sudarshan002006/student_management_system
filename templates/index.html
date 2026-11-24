@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Record Term Marks · MANBHUM VICTORIA INSTITUTION{% endblock %}
+{% block content %}
+<section class="page-header">
+  <span class="eyebrow">Examination Cell · Half-Yearly 2026–27</span>
+  <h1>Record Student Marks</h1>
+  <p class="lead">Enter this term's marks carefully. Marks can be corrected later if needed.</p>
+</section>
+
+<div class="card form-card">
+  <form method="POST" action="{{ url_for('index') }}" novalidate>
+    <div class="form-section">
+      <h2 class="form-section-title">Student details</h2>
+      <div class="grid grid-3">
+        <div class="field">
+          <label for="name">Student full name <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="name" name="name" value="{{ form.get('name', '') }}" placeholder="e.g. Aarav Sharma" required>
+        </div>
+        <div class="field">
+          <label for="roll">Roll number <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="roll" name="roll" value="{{ form.get('roll', '') }}" placeholder="e.g. 2026-014" required>
+          <span class="section-note">Format like 2026-014</span>
+        </div>
+        <div class="field">
+          <label for="class_name">Class <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="class_name" name="class_name" value="{{ form.get('class_name', '') }}" placeholder="e.g. 10-A" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="form-section-title">Subject marks</h2>
+      <span class="section-note">Enter marks out of 100 for each subject. Pass mark is 35 in every subject.</span>
+      <div class="grid grid-subjects">
+        {% for subject in subjects %}
+        <div class="field">
+          <label for="{{ subject.field }}">{{ subject.name }} <span class="req" aria-hidden="true">*</span></label>
+          <input type="number" id="{{ subject.field }}" name="{{ subject.field }}" min="0" max="100" value="{{ form.get(subject.field, '') }}" placeholder="0 – 100" required>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Calculate &amp; Save Result</button>
+      <a href="{{ url_for('students') }}" class="btn btn-ghost">View all results</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

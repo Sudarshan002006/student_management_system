@@ -1,0 +1,118 @@
+<section class="card">
+  <h2 class="card-title">Performance Radar</h2>
+  <p class="section-meta">Half-Yearly 2026–27 · Comparison of two model profiles</p>
+
+  <div class="radar-wrap" id="radar-wrap">
+    <svg class="radar-svg" id="radar-svg" viewBox="0 0 420 420" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <style>
+          .radar-grid-polygon { fill: none; stroke: #E5E7EB; stroke-width: 1; }
+          .radar-grid-polygon.l1 { stroke: #F3F4F6; }
+          .radar-grid-polygon.l2 { stroke: #E5E7EB; }
+          .radar-grid-polygon.l3 { stroke: #D1D5DB; }
+          .radar-grid-polygon.l4 { stroke: #9CA3AF; }
+          .radar-grid-polygon.l5 { stroke: #6B7280; }
+          .radar-axis { stroke: #6B7280; stroke-opacity: 0.8; stroke-width: 1; }
+          .radar-area { fill-opacity: 0.12; stroke-width: 2; stroke-linejoin: round; }
+          .radar-area.a { fill: var(--chart-1); stroke: var(--chart-1); }
+          .radar-area.b { fill: var(--chart-2); stroke: var(--chart-2); }
+          .radar-point { fill: #FFFFFF; stroke-width: 2.5; }
+          .radar-point.a { stroke: var(--chart-1); }
+          .radar-point.b { stroke: var(--chart-2); }
+          .radar-axis-label { fill: var(--school-navy-dark); font-weight: 700; font-size: 11px; text-anchor: middle; dominant-baseline: middle; font-family: var(--font-body); }
+        </style>
+      </defs>
+      <g id="radar-g"></g>
+    </svg>
+  </div>
+
+  <div class="radar-legend">
+    <div class="radar-legend-item">
+      <span class="radar-legend-swatch a"></span>
+      <span style="color:var(--chart-1); font-weight:700;">Model A</span>
+    </div>
+    <div class="radar-legend-item">
+      <span class="radar-legend-swatch b"></span>
+      <span style="color:var(--chart-2); font-weight:700;">Model B</span>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var cx = 210, cy = 210, r = 160;
+  var metrics = [
+    { key: "speed", label: "Speed" },
+    { key: "reliability", label: "Reliability" },
+    { key: "comfort", label: "Comfort" },
+    { key: "efficiency", label: "Efficiency" },
+    { key: "safety", label: "Safety" }
+  ];
+  var data = [
+    { label: "Model A", color: "var(--chart-1)", values: { speed: 85, reliability: 78, comfort: 92, efficiency: 70, safety: 88 } },
+    { label: "Model B", color: "var(--chart-3)", values: { speed: 72, reliability: 90, comfort: 65, efficiency: 88, safety: 75 } }
+  ];
+  var levels = 5;
+  var g = document.getElementById("radar-g");
+
+  function pointFor(index, value) {
+    var angle = -Math.PI / 2 + (index * 2 * Math.PI) / metrics.length;
+    var radius = (value / 100) * r;
+    return [cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius];
+  }
+
+  // Grid polygons (concentric pentagons)
+  for (var l = 1; l <= levels; l++) {
+    var pts = [];
+    for (var i = 0; i < metrics.length; i++) {
+      var p = pointFor(i, (l / levels) * 100);
+      pts.push(p[0] + "," + p[1]);
+    }
+    var poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    poly.setAttribute("class", "radar-grid-polygon l" + l);
+    poly.setAttribute("points", pts.join(" "));
+    g.appendChild(poly);
+  }
+
+  // Axis lines + labels
+  metrics.forEach(function (m, i) {
+    var outer = pointFor(i, 100);
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("class", "radar-axis");
+    line.setAttribute("x1", cx); line.setAttribute("y1", cy);
+    line.setAttribute("x2", outer[0]); line.setAttribute("y2", outer[1]);
+    g.appendChild(line);
+
+    var labelPos = pointFor(i, 108);
+    var label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("class", "radar-axis-label");
+    label.setAttribute("x", labelPos[0]); label.setAttribute("y", labelPos[1]);
+    label.textContent = m.label;
+    g.appendChild(label);
+  });
+
+  // Model areas + points
+  data.forEach(function (model, mi) {
+    var cls = mi === 0 ? "a" : "b";
+    var pts = [];
+    metrics.forEach(function (m, i) {
+      var val = model.values[m.key] || 0;
+      var p = pointFor(i, val);
+      pts.push(p[0] + "," + p[1]);
+    });
+    var area = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    area.setAttribute("class", "radar-area " + cls);
+    area.setAttribute("points", pts.join(" "));
+    g.appendChild(area);
+
+    metrics.forEach(function (m, i) {
+      var val = model.values[m.key] || 0;
+      var p = pointFor(i, val);
+      var dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      dot.setAttribute("class", "radar-point " + cls);
+      dot.setAttribute("cx", p[0]); dot.setAttribute("cy", p[1]); dot.setAttribute("r", 4);
+      g.appendChild(dot);
+    });
+  });
+})();
+</script>

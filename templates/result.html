@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% set parts = student.name.split(' ') %}
+{% set initials = parts[0][:1] ~ parts[1][:1] if parts|length > 1 else parts[0][:1] %}
+{% block title %}Report Card · {{ student.name }} · MANBHUM VICTORIA INSTITUTION{% endblock %}
+{% block content %}
+<section class="page-header row-header">
+  <div>
+    <span class="eyebrow">Report Card · Half-Yearly 2026–27</span>
+    <h1>{{ student.name }}</h1>
+    <p class="lead">Roll {{ student.roll }} · Class {{ student.class }}</p>
+  </div>
+  <a href="{{ url_for('result_pdf', roll=student.roll) }}" class="btn btn-primary">
+    Print Report Card
+  </a>
+</section>
+
+<div class="card report-card">
+  <div class="report-header-band">
+    <div class="school">MANBHUM VICTORIA INSTITUTION</div>
+    <div class="exam">Examination Cell · Half-Yearly Examination 2026–27</div>
+    <div class="meta">Result declared on 15 October 2026</div>
+  </div>
+
+  <div class="report-body">
+    <div class="report-student">
+      <div>
+        <h2>{{ student.name }}</h2>
+        <div class="sub">Roll {{ student.roll }} &nbsp;·&nbsp; Class {{ student.class }}</div>
+      </div>
+      <span class="report-stamp {{ 'pass' if student.status == 'Pass' else 'fail' }}">
+        {{ student.status }}
+      </span>
+    </div>
+
+    <div class="report-meta">
+      <div class="item"><strong>Total</strong> <span>{{ student.total }} / 500</span></div>
+      <div class="item"><strong>Percentage</strong> <span>{{ "%.2f"|format(student.percentage) }}%</span></div>
+      <div class="item"><strong>Grade</strong> <span>{{ student.grade }}</span></div>
+      <div class="item"><strong>Status</strong> <span>{{ student.status }}</span></div>
+    </div>
+
+    <div class="marks-table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Subject</th>
+            <th scope="col" class="num">Marks</th>
+            <th scope="col" class="num">Max</th>
+            <th scope="col">Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for subject in subjects %}
+          {% set mark = student.marks[loop.index0] %}
+          <tr>
+            <td class="strong">{{ subject.name }}</td>
+            <td class="num {{ 'subject-fail' if mark < 35 }}">{{ mark }}</td>
+            <td class="num">100</td>
+            <td>
+              {% if mark < 35 %}
+                <span style="color:var(--fail); font-weight:700;">Fail</span>
+              {% else %}
+                <span style="color:var(--pass); font-weight:700;">Pass</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="report-remarks">
+      <span class="label">Remarks</span>
+      {% if student.status == 'Pass' %}
+        Satisfactory performance. Continue steady study habits.
+      {% else %}
+        Needs improvement in one or more subjects. Please meet the class teacher.
+      {% endif %}
+    </div>
+
+    <div class="signatures">
+      <div class="signature">
+        <div class="signature-line"></div>
+        <div class="signature-label">Class Teacher</div>
+      </div>
+      <div class="signature">
+        <div class="signature-line"></div>
+        <div class="signature-label">Principal</div>
+      </div>
+    </div>
+
+    <p class="report-footer-note">
+      Pass mark is 35 in each subject. Total is calculated out of 500.
+    </p>
+  </div>
+</div>
+
+<div class="form-actions">
+  <a href="{{ url_for('index') }}" class="btn btn-primary">Record Another Student</a>
+  <a href="{{ url_for('students') }}" class="btn btn-ghost">View All Results</a>
+</div>
+{% endblock %}

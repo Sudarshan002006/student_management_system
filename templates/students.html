@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% set stats = get_class_statistics(students) %}
+{% set topper_roll = stats.topper.roll if stats else '' %}
+{% block title %}All Results · MANBHUM VICTORIA INSTITUTION{% endblock %}
+{% block content %}
+<section class="page-header row-header">
+  <div>
+    <span class="eyebrow">Examination Cell</span>
+    <h1>All Results</h1>
+    <p class="lead">{{ students|length }} student result(s) shown{% if query %} for "{{ query }}"{% endif %}.</p>
+  </div>
+  <a href="{{ url_for('index') }}" class="btn btn-primary">Record Marks</a>
+</section>
+
+<div class="card">
+  <form class="search-bar" method="GET" action="{{ url_for('students') }}" role="search">
+    <div class="search-input-wrap">
+      <input type="search" name="q" value="{{ query }}" placeholder="Search by name or roll number…" aria-label="Search results">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+    {% if query %}
+    <a href="{{ url_for('students') }}" class="btn btn-ghost">Clear</a>
+    {% endif %}
+  </form>
+
+  {% if students %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Roll No.</th>
+          <th scope="col">Name</th>
+          <th scope="col">Class</th>
+          <th scope="col" class="num">Total</th>
+          <th scope="col" class="num">Percentage</th>
+          <th scope="col">Grade</th>
+          <th scope="col">Status</th>
+          <th scope="col"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr {% if topper_roll and student.roll == topper_roll %}class="row-highlight"{% endif %}>
+          <td class="mono strong">{{ student.roll }}</td>
+          <td class="strong">{{ student.name }}</td>
+          <td>{{ student.class }}</td>
+          <td class="num">{{ student.total }}</td>
+          <td class="num">{{ "%.2f"|format(student.percentage) }}%</td>
+          <td>
+            <span class="grade-chip">{{ student.grade }}</span>
+          </td>
+          <td>
+            <span class="badge {{ 'badge-pass' if student.status == 'Pass' else 'badge-fail' }}">
+              {{ student.status }}
+            </span>
+          </td>
+          <td class="actions">
+            <a href="{{ url_for('result', roll=student.roll) }}" class="btn btn-small">View</a>
+            <a href="{{ url_for('result_pdf', roll=student.roll) }}" class="btn btn-small">PDF</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <span class="empty-icon">📄</span>
+    <h2>No results found</h2>
+    {% if query %}
+      <p>No student matches "{{ query }}". Try a different name or roll number.</p>
+    {% else %}
+      <p>No results have been recorded yet.</p>
+    {% endif %}
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Record Marks</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
